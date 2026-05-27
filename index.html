@@ -522,7 +522,7 @@
       state.bookings = data.bookings;
       state.recurring = data.recurring;
       state.settings = data.settings;
-      state.cycleDays = data.cycleDays || {};
+      state.cycleDays = data.cycleDays || {}; // Maps live cycle days state from Code.gs
       
       // Update Auth UI Elements
       document.getElementById('user-email-badge').innerText = state.userEmail;
