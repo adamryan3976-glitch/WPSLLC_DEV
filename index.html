@@ -72,85 +72,81 @@
   </div>
 
   <!-- Main Content Layout Grid -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-6">
     
-    <!-- Left Column: Navigation, Datepicker, Chromebook quicklinks -->
-    <section class="w-full lg:w-80 space-y-6 flex-shrink-0">
+    <!-- Left Column: Navigation, Datepicker -->
+    <section class="w-full lg:w-64 space-y-4 flex-shrink-0">
       
-      <!-- Chromebook Quick Link Widget -->
-      <a href="https://docs.google.com/spreadsheets/d/1ruNC9RYhVKKjMv66EGIWbksIMGRhfphrGhT26CPhawQ/edit?usp=sharing" target="_blank" class="block bg-gradient-to-br from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-2xl p-5 shadow-md shadow-emerald-100 transition-all duration-300 transform hover:-translate-y-0.5">
-        <div class="flex items-center space-x-4">
-          <span class="material-icons text-3xl opacity-90">laptop_chromebook</span>
-          <div>
-            <h4 class="font-bold text-sm leading-tight">Shared Chromebooks</h4>
-            <p class="text-xs text-emerald-100 mt-0.5">View spreadsheet &amp; reserve carts</p>
-          </div>
-        </div>
-      </a>
-
       <!-- Date Selection Widget -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="font-bold text-slate-800 text-sm flex items-center">
             <span class="material-icons text-slate-400 mr-2 text-lg">calendar_month</span>
-            Target Date
+            Focus Week
           </h3>
           <button onclick="jumpToToday()" class="text-xs font-bold text-teal-600 hover:text-teal-700 transition">Today</button>
         </div>
         
         <!-- Native Premium HTML Date picker -->
         <div>
-          <input type="date" id="date-input" onchange="handleDateChange(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" />
+          <input type="date" id="date-input" onchange="handleDateChange(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" />
         </div>
 
         <!-- Weekly Step Selectors -->
         <div class="grid grid-cols-2 gap-2 pt-2">
-          <button onclick="stepWeek(-1)" class="flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs py-2.5 rounded-xl transition">
+          <button onclick="stepWeek(-1)" class="flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs py-2 rounded-xl transition">
             <span class="material-icons text-xs">arrow_back</span>
             <span>Prev Week</span>
           </button>
-          <button onclick="stepWeek(1)" class="flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs py-2.5 rounded-xl transition">
+          <button onclick="stepWeek(1)" class="flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs py-2 rounded-xl transition">
             <span>Next Week</span>
             <span class="material-icons text-xs">arrow_forward</span>
           </button>
         </div>
       </div>
-      
-      <!-- Day Quick-Jump Selector -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
-        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-slate-400">Weekly View</h4>
-        <div id="days-strip" class="space-y-2">
-          <!-- Populated by JS -->
-        </div>
-      </div>
     </section>
 
-    <!-- Right Column: Interactive Schedule Engine Grid -->
-    <section class="flex-grow space-y-6">
-      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+    <!-- Right Column: Full Weekly Schedule Grid -->
+    <section class="flex-grow space-y-6 overflow-hidden">
+      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col h-full">
         
-        <!-- Selected Date Header Summary -->
-        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <!-- Weekly Grid Display Summary -->
+        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 id="schedule-title-date" class="font-black text-2xl text-slate-800 tracking-tight">Loading calendar...</h2>
-            <p id="schedule-subtitle-cycle" class="text-xs text-slate-500 font-semibold mt-0.5 uppercase tracking-wider">Retrieving details</p>
+            <h2 id="schedule-title-date" class="font-black text-xl text-slate-800 tracking-tight">Focus Week Schedule</h2>
+            <p class="text-xs text-slate-500 font-semibold mt-0.5 uppercase tracking-wider">Monday through Friday Overview</p>
           </div>
-          <span class="bg-teal-50 text-teal-700 border border-teal-100 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm" id="calendar-day-badge">
-            Day Status
-          </span>
         </div>
 
-        <!-- Schedule Main List Area -->
-        <div class="p-6">
-          <div id="booking-grid" class="space-y-4">
-            <!-- Populated via renderGrid() -->
-            <div class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-3">
-              <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <p class="text-sm font-semibold text-slate-600">Establishing Secure Google Session...</p>
-            </div>
+        <!-- Scrollable Grid Container -->
+        <div class="p-6 overflow-x-auto">
+          <div class="min-w-[1000px]">
+            <table class="w-full border-collapse text-left table-fixed">
+              <thead>
+                <tr id="grid-header" class="border-b border-slate-200 bg-slate-100/50">
+                  <th class="w-56 p-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Time Slot</th>
+                  <th id="col-mon" class="p-3 border-l border-slate-200">Monday</th>
+                  <th id="col-tue" class="p-3 border-l border-slate-200">Tuesday</th>
+                  <th id="col-wed" class="p-3 border-l border-slate-200">Wednesday</th>
+                  <th id="col-thu" class="p-3 border-l border-slate-200">Thursday</th>
+                  <th id="col-fri" class="p-3 border-l border-slate-200 font-bold">Friday</th>
+                </tr>
+              </thead>
+              <tbody id="grid-body" class="divide-y divide-slate-100">
+                <!-- Dynamically populated via renderScheduleGrid() -->
+                <tr>
+                  <td colspan="6" class="p-12 text-center">
+                    <div class="flex flex-col items-center justify-center text-slate-400 space-y-3">
+                      <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <p class="text-sm font-semibold text-slate-600">Establishing Secure Google Session...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -172,7 +168,12 @@
 
       <!-- Booking Form Input Fields -->
       <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
-        <!-- Input fields -->
+        <!-- Target day display -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <span class="text-[10px] font-black tracking-wider uppercase text-slate-400">Target Date</span>
+          <p id="booking-target-date-display" class="font-bold text-sm text-slate-800">Date Selection</p>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Your Full Name</label>
           <input type="text" id="booking-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" placeholder="e.g. Ms. Jamieson">
@@ -182,21 +183,13 @@
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Start Period</label>
             <select id="start-period" onchange="validatePeriodRange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition">
-              <option value="1">Period 1</option>
-              <option value="2">Period 2</option>
-              <option value="3">Period 3</option>
-              <option value="4">Period 4</option>
-              <option value="5">Period 5</option>
+              <!-- Dynamically populated periods -->
             </select>
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">End Period</label>
             <select id="end-period" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition">
-              <option value="1">Period 1</option>
-              <option value="2">Period 2</option>
-              <option value="3">Period 3</option>
-              <option value="4">Period 4</option>
-              <option value="5">Period 5</option>
+              <!-- Dynamically populated periods -->
             </select>
           </div>
         </div>
@@ -349,7 +342,7 @@
 
   <!-- Script Implementation -->
   <script>
-    // Self-Healing Guard Mock for Google Apps Script 'google' Object Outside GAS Hosting Environments
+    // Self-Healing Guard Mock for Google Apps Script 'google' Object (Sanitized Fallback)
     if (typeof google === 'undefined') {
       window.google = {
         script: {
@@ -365,14 +358,11 @@
                         onSuccess({
                           userEmail: "demo-educator@ddsb.ca",
                           isAdmin: true,
-                          bookings: [
-                            { id: "BK_sim_1", user: "demo-educator@ddsb.ca", name: "Ms. Jamieson", date: todayStr, period: "1", purpose: "Grade 4 Research & Storytelling", seriesId: "" },
-                            { id: "BK_sim_2", user: "another-teacher@ddsb.ca", name: "Mr. Henderson", date: todayStr, period: "3", purpose: "Grade 8 STEAM Lab", seriesId: "SERIES_sim_999" }
-                          ],
+                          bookings: [], // Clean start - no dummy records
                           recurring: [],
                           settings: {
-                            BannerActive: "true",
-                            BannerMessage: "Live Preview Sandbox: Data changes will run inside local memory. Deploy to Google Apps Script for real database persistence.",
+                            BannerActive: "false",
+                            BannerMessage: "",
                             Admins: "demo-educator@ddsb.ca"
                           },
                           cycleDays: {
@@ -469,6 +459,25 @@
       };
     }
 
+    // Schedule Period Configuration Structure (15 Slots)
+    const periods = [
+      { num: 1, label: "Before School", time: "7:45 - 8:45", break: true },
+      { num: 2, label: "Period 1", time: "8:45 - 9:15" },
+      { num: 3, label: "Period 2", time: "9:15 - 9:45" },
+      { num: 4, label: "Period 3", time: "9:45 - 10:15" },
+      { num: 5, label: "AM Recess", time: "10:15 - 10:30", break: true },
+      { num: 6, label: "Period 4", time: "10:30 - 11:00" },
+      { num: 7, label: "Period 5", time: "11:00 - 11:30" },
+      { num: 8, label: "Lunch", time: "11:30 - 12:30", break: true },
+      { num: 9, label: "Period 6", time: "12:30 - 1:00" },
+      { num: 10, label: "Period 7", time: "1:00 - 1:30" },
+      { num: 11, label: "Period 8", time: "1:30 - 2:00" },
+      { num: 12, label: "PM Recess", time: "2:00 - 2:15", break: true },
+      { num: 13, label: "Period 9", time: "2:15 - 2:45" },
+      { num: 14, label: "Period 10", time: "2:45 - 3:15" },
+      { num: 15, label: "After School", time: "3:15 - 3:45", break: true }
+    ];
+
     // State Engine
     let state = {
       userEmail: "",
@@ -477,7 +486,7 @@
       bookings: [],
       recurring: [],
       settings: {},
-      cycleDays: {}, // Live Key-Value mapping returned from spreadsheet
+      cycleDays: {}, // Live mapping
       tempBookingData: {},
       recurringType: 'cycle', // 'cycle' or 'weekly'
       daysConfig: {
@@ -493,6 +502,9 @@
       state.selectedDate = formatDateString(today);
       document.getElementById('date-input').value = state.selectedDate;
       
+      // Initialize Dropdown Selections
+      populateModalPeriodDropdowns();
+
       // Load initial dataset from Google Sheets
       loadInitialSystemData();
     };
@@ -539,8 +551,7 @@
       nextMonth.setMonth(nextMonth.getMonth() + 1);
       document.getElementById('recurring-end-date').value = formatDateString(nextMonth);
       
-      // Render components
-      renderSidebarDays();
+      // Render schedule matrix
       renderScheduleGrid();
     }
 
@@ -549,13 +560,13 @@
     }
 
     /**
-     * Helper to get cycle day label dynamically with fallback
+     * Helper to get cycle day label dynamically with database fallback
      */
     function getCycleDayLabel(dateStr, jsDateObj) {
       if (state.cycleDays && state.cycleDays[dateStr]) {
         return state.cycleDays[dateStr];
       }
-      // Fallback fallback algorithm math if specific date is missing on sheet
+      // Mathematical cycle calculation fallback for unmapped dates
       const dayNum = jsDateObj.getDay();
       if (dayNum >= 1 && dayNum <= 5) {
         return "Day " + (((dayNum - 1) % 5) + 1);
@@ -564,136 +575,145 @@
     }
 
     /**
-     * Renders Day Strip quick selection UI elements
+     * Setup 15 Option lists inside booking config modal
      */
-    function renderSidebarDays() {
-      const container = document.getElementById('days-strip');
-      container.innerHTML = "";
-      
-      const current = new Date(state.selectedDate + "T00:00:00");
-      const currentDayOfWeek = current.getDay();
-      
-      // Get Start of week (Monday)
-      const mondayOffset = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
-      const monday = new Date(current);
-      monday.setDate(current.getDate() + mondayOffset);
-      
-      const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-      
-      for(let i = 0; i < 5; i++) {
-        const iteratedDate = new Date(monday);
-        iteratedDate.setDate(monday.getDate() + i);
-        const iteratedStr = formatDateString(iteratedDate);
+    function populateModalPeriodDropdowns() {
+      const startSelect = document.getElementById('start-period');
+      const endSelect = document.getElementById('end-period');
+      startSelect.innerHTML = "";
+      endSelect.innerHTML = "";
+
+      periods.forEach(p => {
+        const optionText = `${p.label} (${p.time})`;
         
-        const isSelected = iteratedStr === state.selectedDate;
-        
-        const btn = document.createElement('button');
-        btn.className = `w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
-          isSelected 
-            ? 'bg-teal-50 border-teal-300 text-teal-900 font-bold shadow-sm' 
-            : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600 font-semibold'
-        }`;
-        
-        btn.onclick = () => handleDateChange(iteratedStr);
-        
-        // Calculate cycle indicator lookup
-        const cycleText = getCycleDayLabel(iteratedStr, iteratedDate);
-        
-        btn.innerHTML = `
-          <div class="flex flex-col">
-            <span class="text-xs uppercase tracking-wide opacity-80">${dayNames[i]}</span>
-            <span class="text-xs mt-0.5 opacity-60 font-medium">${iteratedDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
-          </div>
-          <span class="text-[10px] px-2 py-0.5 rounded-full ${isSelected ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-500'} font-bold">${cycleText}</span>
-        `;
-        
-        container.appendChild(btn);
-      }
+        const optStart = document.createElement('option');
+        optStart.value = p.num;
+        optStart.innerText = optionText;
+        startSelect.appendChild(optStart);
+
+        const optEnd = document.createElement('option');
+        optEnd.value = p.num;
+        optEnd.innerText = optionText;
+        endSelect.appendChild(optEnd);
+      });
     }
 
     /**
-     * Renders daily interactive period slot list
+     * Renders a robust 5-day Monday to Friday Schedule Table
      */
     function renderScheduleGrid() {
-      const grid = document.getElementById('booking-grid');
-      grid.innerHTML = "";
+      const gridHeader = document.getElementById('grid-header');
+      const gridBody = document.getElementById('grid-body');
       
-      // Set header strings
-      const dateObj = new Date(state.selectedDate + "T00:00:00");
-      document.getElementById('schedule-title-date').innerText = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      
-      const cycleStr = getCycleDayLabel(state.selectedDate, dateObj);
-      document.getElementById('schedule-subtitle-cycle').innerText = `School Cycle Focus: ${cycleStr}`;
-      document.getElementById('calendar-day-badge').innerText = cycleStr;
-      
-      // Active period configs
-      const periods = [
-        { num: 1, label: "Period 1", time: "09:00 AM - 10:00 AM" },
-        { num: 2, label: "Period 2", time: "10:00 AM - 11:00 AM" },
-        { num: 3, label: "Period 3", time: "11:15 AM - 12:15 PM" },
-        { num: 4, label: "Period 4", time: "01:00 PM - 02:00 PM" },
-        { num: 5, label: "Period 5", time: "02:00 PM - 03:00 PM" }
-      ];
+      gridHeader.innerHTML = '<th class="w-56 p-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Time Slot</th>';
+      gridBody.innerHTML = "";
 
-      periods.forEach(period => {
-        // Filter matchings bookings for current date and period
-        const matched = state.bookings.find(b => b.date === state.selectedDate && b.period.toString() === period.num.toString());
-        
-        const card = document.createElement('div');
-        
-        if (matched) {
-          // Locked / Booked Slot View
-          const isOwner = matched.user === state.userEmail;
-          const showDeleteOption = isOwner || state.isAdmin;
-          
-          card.className = `flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 rounded-2xl border transition-all ${
-            isOwner 
-              ? 'bg-teal-50 border-teal-200 text-teal-900' 
-              : 'bg-white border-slate-200 text-slate-800'
-          }`;
-          
-          card.innerHTML = `
-            <div class="space-y-1">
-              <div class="flex items-center space-x-2">
-                <span class="text-xs font-black uppercase tracking-wider ${isOwner ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded">
-                  ${period.label}
-                </span>
-                <span class="text-xs text-slate-400 font-semibold">${period.time}</span>
-              </div>
-              <h4 class="font-bold text-base leading-tight mt-1">${matched.purpose}</h4>
-              <p class="text-xs font-medium text-slate-400 flex items-center">
-                <span class="material-icons text-xs mr-1">person</span> Reserved by: ${matched.name} (${matched.user})
-                ${matched.seriesId ? '<span class="material-icons text-xs text-emerald-500 ml-2 mr-0.5">repeat</span><span class="text-emerald-600">Series</span>' : ''}
-              </p>
+      // Calculate Dates for focus week (Monday - Friday) based on selected Date
+      const currentFocus = new Date(state.selectedDate + "T00:00:00");
+      const currentDayOfWeek = currentFocus.getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
+      
+      const mondayOffset = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
+      const monday = new Date(currentFocus);
+      monday.setDate(currentFocus.getDate() + mondayOffset);
+
+      const weekdaysData = [];
+      const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+      for (let i = 0; i < 5; i++) {
+        const tempDate = new Date(monday);
+        tempDate.setDate(monday.getDate() + i);
+        const dateStr = formatDateString(tempDate);
+        const cycleText = getCycleDayLabel(dateStr, tempDate);
+
+        weekdaysData.push({
+          dateStr: dateStr,
+          jsDate: tempDate,
+          dayLabel: dayNames[i],
+          cycleText: cycleText
+        });
+
+        // Append to Table Header
+        const isTodayColumn = dateStr === formatDateString(new Date());
+        const th = document.createElement('th');
+        th.className = `p-3 border-l border-slate-200 text-xs tracking-tight ${isTodayColumn ? 'bg-teal-50/50' : ''}`;
+        th.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-700 uppercase">${dayNames[i]}</span>
+              <span class="text-[10px] text-slate-400 font-semibold mt-0.5">${tempDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
             </div>
-            ${showDeleteOption ? `
-              <button onclick="openDeleteConfirm('${matched.id}', '${matched.seriesId}')" class="mt-3 sm:mt-0 px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl flex items-center transition border border-rose-100">
-                <span class="material-icons text-xs mr-1">delete</span> Release Slot
+            <span class="text-[9px] px-2 py-0.5 rounded-full ${isTodayColumn ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-500'} font-bold">${cycleText}</span>
+          </div>
+        `;
+        gridHeader.appendChild(th);
+      }
+
+      // Update Subtitle Focus Summary Label 
+      const weekStartStr = weekdaysData[0].jsDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const weekEndStr = weekdaysData[4].jsDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('schedule-title-date').innerText = `Week of ${weekStartStr} – ${weekEndStr}`;
+
+      // Build 15 Row Matrices
+      periods.forEach(p => {
+        const tr = document.createElement('tr');
+        // Custom background style for recess/lunch break rows to keep it beautifully structured
+        tr.className = p.break ? 'bg-slate-50/70' : 'hover:bg-slate-50/30';
+
+        // Label Column
+        const labelTd = document.createElement('td');
+        labelTd.className = "p-3 font-semibold text-xs text-slate-700 align-middle";
+        labelTd.innerHTML = `
+          <div class="flex flex-col">
+            <span class="${p.break ? 'text-slate-500 font-bold' : 'text-slate-800'}">${p.label}</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">${p.time}</span>
+          </div>
+        `;
+        tr.appendChild(labelTd);
+
+        // Day Columns (1 to 5)
+        weekdaysData.forEach(day => {
+          const dayTd = document.createElement('td');
+          const isTodayColumn = day.dateStr === formatDateString(new Date());
+          dayTd.className = `p-2 border-l border-slate-100 align-middle ${isTodayColumn ? 'bg-teal-50/10' : ''}`;
+
+          // Search active reservation slot
+          const matched = state.bookings.find(b => b.date === day.dateStr && b.period.toString() === p.num.toString());
+
+          if (matched) {
+            const isOwner = matched.user === state.userEmail;
+            const showDeleteOption = isOwner || state.isAdmin;
+
+            dayTd.innerHTML = `
+              <div class="relative group p-2.5 rounded-xl border text-xs leading-normal transition-all ${
+                isOwner 
+                  ? 'bg-teal-50/90 border-teal-200 text-teal-900 shadow-sm' 
+                  : 'bg-white border-slate-200 text-slate-800'
+              }">
+                <div class="font-bold truncate" title="${matched.purpose}">${matched.purpose}</div>
+                <div class="text-[10px] text-slate-400 mt-0.5 font-medium flex items-center justify-between">
+                  <span class="truncate pr-1">${matched.name}</span>
+                  ${matched.seriesId ? '<span class="material-icons text-[10px] text-emerald-500" title="Recurring Series">repeat</span>' : ''}
+                </div>
+                ${showDeleteOption ? `
+                  <button onclick="openDeleteConfirm('${matched.id}', '${matched.seriesId}')" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-rose-100 hover:bg-rose-200 text-rose-700 h-5 w-5 flex items-center justify-center rounded-full transition shadow-sm">
+                    <span class="material-icons text-xs">close</span>
+                  </button>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            // Empty Cell Available Action Trigger
+            dayTd.innerHTML = `
+              <button onclick="openBookingConfig('${day.dateStr}', ${p.num})" class="w-full py-2.5 border border-dashed border-slate-200 hover:border-teal-400 hover:bg-white text-slate-300 hover:text-teal-600 rounded-xl flex items-center justify-center transition-all group">
+                <span class="material-icons text-xs group-hover:scale-110 transition">add</span>
               </button>
-            ` : `
-              <span class="mt-3 sm:mt-0 text-[10px] bg-slate-100 text-slate-400 font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-200/50">Unavailable</span>
-            `}
-          `;
-        } else {
-          // Available Slot View
-          card.className = "flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 transition-all group";
-          card.innerHTML = `
-            <div class="space-y-1">
-              <div class="flex items-center space-x-2">
-                <span class="text-xs font-black uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
-                  ${period.label}
-                </span>
-                <span class="text-xs text-slate-400 font-semibold">${period.time}</span>
-              </div>
-              <h4 class="font-bold text-slate-400 italic text-base group-hover:text-slate-500 transition">Period open &amp; available for booking</h4>
-            </div>
-            <button onclick="openBookingConfig(${period.num})" class="mt-3 sm:mt-0 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center transition shadow-sm">
-              <span class="material-icons text-xs mr-1">add</span> Book Slot
-            </button>
-          `;
-        }
-        
-        grid.appendChild(card);
+            `;
+          }
+
+          tr.appendChild(dayTd);
+        });
+
+        gridBody.appendChild(tr);
       });
     }
 
@@ -704,7 +724,6 @@
       if(!val) return;
       state.selectedDate = val;
       document.getElementById('date-input').value = val;
-      renderSidebarDays();
       renderScheduleGrid();
     }
 
@@ -721,8 +740,16 @@
     /**
      * MODAL triggers: Create booking
      */
-    function openBookingConfig(pNum) {
+    function openBookingConfig(targetDateStr, pNum) {
       document.getElementById('booking-form').reset();
+      
+      // Update target informational labels
+      const targetDateObj = new Date(targetDateStr + "T00:00:00");
+      const targetDayCycleText = getCycleDayLabel(targetDateStr, targetDateObj);
+      document.getElementById('booking-target-date-display').innerText = `${targetDateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} (${targetDayCycleText})`;
+
+      // Store context state properties
+      state.bookingTargetDate = targetDateStr;
       
       // Default configurations
       document.getElementById('start-period').value = pNum;
@@ -834,7 +861,7 @@
         startPeriod: document.getElementById('start-period').value,
         endPeriod: document.getElementById('end-period').value,
         purpose: document.getElementById('booking-purpose').value,
-        startDate: state.selectedDate,
+        startDate: state.bookingTargetDate || state.selectedDate,
         isRecurring: isRecurring,
         recurringType: state.recurringType,
         selectedDays: checkedDays,
@@ -844,14 +871,18 @@
       };
       
       // Lock UI
-      document.getElementById('booking-grid').innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-3">
-          <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <p class="text-sm font-semibold text-slate-600">Syncing with Google Sheets...</p>
-        </div>
+      document.getElementById('grid-body').innerHTML = `
+        <tr>
+          <td colspan="6" class="p-12 text-center">
+            <div class="flex flex-col items-center justify-center text-slate-400 space-y-3">
+              <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="text-sm font-semibold text-slate-600">Syncing with Google Sheets...</p>
+            </div>
+          </td>
+        </tr>
       `;
       closeBookingModal();
       
@@ -893,14 +924,18 @@
     function handleDeleteAction(actionScope) {
       closeDeleteModal();
       
-      document.getElementById('booking-grid').innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-3">
-          <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <p class="text-sm font-semibold text-slate-600">Releasing reservation slot...</p>
-        </div>
+      document.getElementById('grid-body').innerHTML = `
+        <tr>
+          <td colspan="6" class="p-12 text-center">
+            <div class="flex flex-col items-center justify-center text-slate-400 space-y-3">
+              <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="text-sm font-semibold text-slate-600">Releasing reservation slot...</p>
+            </div>
+          </td>
+        </tr>
       `;
       
       if (actionScope === 'series') {
