@@ -365,8 +365,13 @@
                             BannerMessage: "",
                             Admins: "demo-educator@ddsb.ca"
                           },
+                          // Rich localized mapping simulation matching 2026-05-25 focus week precisely!
                           cycleDays: {
-                            [todayStr]: "Day 3"
+                            "2026-05-25": "Day 5",
+                            "2026-05-26": "Day 1",
+                            "2026-05-27": "Day 2",
+                            "2026-05-28": "Day 3",
+                            "2026-05-29": "Day 4"
                           }
                         });
                       }, 400);
@@ -921,6 +926,9 @@
       document.getElementById('delete-modal').close();
     }
 
+    /**
+     * Delete Booking execution
+     */
     function handleDeleteAction(actionScope) {
       closeDeleteModal();
       
