@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Custom Styling for Interactive Depth -->
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+
+  <!-- Header Section -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <!-- SVG Custom Library Crest Logo -->
+        <div class="bg-teal-600 text-white p-2 rounded-xl shadow-md">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-900 text-lg leading-tight tracking-tight">Learning Commons</h1>
+          <p class="text-xs text-slate-500 font-medium tracking-wide uppercase">Booking Manager</p>
+        </div>
+      </div>
+      
+      <!-- SSO Authenticated User Status Badge -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden md:flex flex-col text-right">
+          <span class="text-xs text-slate-400 font-semibold uppercase">Logged In As</span>
+          <span id="user-email-badge" class="text-sm font-semibold text-slate-700">Loading auth...</span>
+        </div>
+        <div class="bg-slate-100 border border-slate-200 rounded-full h-10 w-10 flex items-center justify-center font-bold text-slate-600 shadow-inner" id="user-avatar">
+          L
+        </div>
+        <button id="admin-toggle-btn" class="hidden bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2 px-4 rounded-lg shadow-sm transition-all" onclick="openAdminPanel()">
+          Admin Portal
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global Alert Banner Area -->
+  <div id="alert-banner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-3 text-amber-900 shadow-sm transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="material-icons text-amber-600">campaign</span>
+        <span id="banner-text" class="text-sm font-medium">System status or important notice appears here.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout Grid -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    
+    <!-- Left Column: Navigation, Datepicker, Chromebook quicklinks -->
+    <section class="w-full lg:w-80 space-y-6 flex-shrink-0">
+      
+      <!-- Chromebook Quick Link Widget -->
+      <a href="https://docs.google.com/spreadsheets/d/1ruNC9RYhVKKjMv66EGIWbksIMGRhfphrGhT26CPhawQ/edit?usp=sharing" target="_blank" class="block bg-gradient-to-br from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-2xl p-5 shadow-md shadow-emerald-100 transition-all duration-300 transform hover:-translate-y-0.5">
+        <div class="flex items-center space-x-4">
+          <span class="material-icons text-3xl opacity-90">laptop_chromebook</span>
+          <div>
+            <h4 class="font-bold text-sm leading-tight">Shared Chromebooks</h4>
+            <p class="text-xs text-emerald-100 mt-0.5">View spreadsheet &amp; reserve carts</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- Date Selection Widget -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center">
+            <span class="material-icons text-slate-400 mr-2 text-lg">calendar_month</span>
+            Target Date
+          </h3>
+          <button onclick="jumpToToday()" class="text-xs font-bold text-teal-600 hover:text-teal-700 transition">Today</button>
+        </div>
+        
+        <!-- Native Premium HTML Date picker -->
+        <div>
+          <input type="date" id="date-input" onchange="handleDateChange(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" />
+        </div>
+
+        <!-- Weekly Step Selectors -->
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <button onclick="stepWeek(-1)" class="flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs py-2.5 rounded-xl transition">
+            <span class="material-icons text-xs">arrow_back</span>
+            <span>Prev Week</span>
+          </button>
+          <button onclick="stepWeek(1)" class="flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs py-2.5 rounded-xl transition">
+            <span>Next Week</span>
+            <span class="material-icons text-xs">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Day Quick-Jump Selector -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider text-slate-400">Weekly View</h4>
+        <div id="days-strip" class="space-y-2">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Interactive Schedule Engine Grid -->
+    <section class="flex-grow space-y-6">
+      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+        
+        <!-- Selected Date Header Summary -->
+        <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h2 id="schedule-title-date" class="font-black text-2xl text-slate-800 tracking-tight">Loading calendar...</h2>
+            <p id="schedule-subtitle-cycle" class="text-xs text-slate-500 font-semibold mt-0.5 uppercase tracking-wider">Retrieving details</p>
+          </div>
+          <span class="bg-teal-50 text-teal-700 border border-teal-100 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm" id="calendar-day-badge">
+            Day Status
+          </span>
+        </div>
+
+        <!-- Schedule Main List Area -->
+        <div class="p-6">
+          <div id="booking-grid" class="space-y-4">
+            <!-- Populated via renderGrid() -->
+            <div class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-3">
+              <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="text-sm font-semibold text-slate-600">Establishing Secure Google Session...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: Booking Entry / Configuration Form -->
+  <dialog id="booking-modal" class="rounded-3xl shadow-2xl border border-slate-200 max-w-lg w-full p-0 backdrop:bg-slate-900/40">
+    <div class="p-6 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center space-x-3 text-teal-600">
+          <span class="material-icons text-3xl">add_task</span>
+          <h2 class="text-xl font-bold text-slate-800">Configure Library Slot</h2>
+        </div>
+        <button onclick="closeBookingModal()" class="text-slate-400 hover:text-slate-600">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <!-- Booking Form Input Fields -->
+      <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+        <!-- Input fields -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Your Full Name</label>
+          <input type="text" id="booking-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" placeholder="e.g. Ms. Jamieson">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Start Period</label>
+            <select id="start-period" onchange="validatePeriodRange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition">
+              <option value="1">Period 1</option>
+              <option value="2">Period 2</option>
+              <option value="3">Period 3</option>
+              <option value="4">Period 4</option>
+              <option value="5">Period 5</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">End Period</label>
+            <select id="end-period" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition">
+              <option value="1">Period 1</option>
+              <option value="2">Period 2</option>
+              <option value="3">Period 3</option>
+              <option value="4">Period 4</option>
+              <option value="5">Period 5</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Purpose / Class / Grade</label>
+          <input type="text" id="booking-purpose" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" placeholder="e.g. Grade 4 Research &amp; Circulation">
+        </div>
+
+        <!-- RECURRING BOOKING ENGINE SECTION -->
+        <div class="border-t border-slate-100 pt-4 mt-2">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-semibold text-slate-700">Make this a recurring booking</label>
+            <input type="checkbox" id="is-recurring" onchange="toggleRecurringSection(this.checked)" class="w-10 h-6 bg-slate-200 rounded-full appearance-none checked:bg-teal-500 relative transition-all cursor-pointer before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-1 before:left-1 checked:before:translate-x-4 before:transition-all shadow-inner">
+          </div>
+
+          <div id="recurring-panel" class="hidden mt-4 space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Repeat Pattern Type</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="type-cycle" onclick="setRecurringType('cycle')" class="py-2 px-3 border-2 border-teal-500 bg-teal-50 text-teal-700 font-bold text-xs rounded-xl transition">
+                  School Cycle Day
+                </button>
+                <button type="button" id="type-weekly" onclick="setRecurringType('weekly')" class="py-2 px-3 border border-slate-200 hover:bg-white text-slate-600 font-bold text-xs rounded-xl transition">
+                  Weekly Day of Week
+                </button>
+              </div>
+            </div>
+
+            <!-- Days Checklist -->
+            <div>
+              <label id="days-checklist-label" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Active Cycle Days</label>
+              <div id="days-checklist-container" class="flex flex-wrap gap-2">
+                <!-- Dynamically populated via renderChecklists() -->
+              </div>
+            </div>
+
+            <!-- Recurring Limits -->
+            <div class="space-y-3 pt-2 border-t border-slate-200/50">
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">End Rule</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center space-x-2 text-xs font-semibold text-slate-600">
+                  <input type="radio" name="end-type" value="date" checked onchange="toggleEndRule(this.value)" class="text-teal-600 focus:ring-teal-500">
+                  <span>End on Date</span>
+                </label>
+                <label class="flex items-center space-x-2 text-xs font-semibold text-slate-600">
+                  <input type="radio" name="end-type" value="occurrences" onchange="toggleEndRule(this.value)" class="text-teal-600 focus:ring-teal-500">
+                  <span>After Occurrences</span>
+                </label>
+              </div>
+
+              <div id="end-rule-date" class="block mt-2">
+                <input type="date" id="recurring-end-date" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition" />
+              </div>
+              <div id="end-rule-occurrences" class="hidden mt-2">
+                <div class="flex items-center space-x-2">
+                  <input type="number" id="recurring-occurrences" min="1" max="24" value="6" class="w-24 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition">
+                  <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">occurrences</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeBookingModal()" class="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-sm rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl shadow-md transition">
+            Book Slots
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- MODAL: Cancellation / Action Option Dialog -->
+  <dialog id="delete-modal" class="rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-0 backdrop:bg-slate-900/40">
+    <div class="p-6 space-y-4">
+      <div class="flex items-center space-x-3 text-red-600">
+        <span class="material-icons text-3xl">delete_forever</span>
+        <h3 class="text-lg font-bold text-slate-800">Cancel Booking Reservation</h3>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        Are you sure you want to release and cancel this scheduled library period? This action cannot be undone.
+      </p>
+      
+      <!-- Recurring series choices -->
+      <div id="delete-series-options" class="hidden border-t border-slate-100 pt-3 space-y-3">
+        <p class="text-xs font-bold text-amber-700 flex items-center bg-amber-50 p-2.5 rounded-xl">
+          <span class="material-icons text-sm mr-2">warning</span> This reservation is part of a recurring series.
+        </p>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="handleDeleteAction('single')" class="py-2.5 px-3 border border-red-200 hover:bg-red-50 text-red-700 font-bold text-xs rounded-xl transition">
+            Only This Instance
+          </button>
+          <button onclick="handleDeleteAction('series')" class="py-2.5 px-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition">
+            The Entire Series
+          </button>
+        </div>
+      </div>
+
+      <div id="delete-single-options" class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+        <button onclick="closeDeleteModal()" class="px-5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold text-sm rounded-xl transition">Cancel</button>
+        <button id="delete-single-btn" onclick="handleDeleteAction('single')" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition">Delete Booking</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: System Administration Console -->
+  <dialog id="admin-modal" class="rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-0 backdrop:bg-slate-900/40">
+    <div class="p-6 space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center space-x-2.5 text-slate-900">
+          <span class="material-icons text-2xl text-slate-500">settings</span>
+          <h2 class="text-xl font-black tracking-tight">System Admin Console</h2>
+        </div>
+        <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Banner Alert Management -->
+        <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/50">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500">Global Announcement Banner</h4>
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-slate-600">Active Banner Broadcast</label>
+            <input type="checkbox" id="admin-banner-active" class="w-10 h-6 bg-slate-200 rounded-full appearance-none checked:bg-teal-500 relative transition-all cursor-pointer before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-1 before:left-1 checked:before:translate-x-4 before:transition-all shadow-inner">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-slate-600">Announcement Message</label>
+            <textarea id="admin-banner-message" rows="2" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20" placeholder="Type notice..."></textarea>
+          </div>
+        </div>
+
+        <!-- Custom Admin Access Configuration -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Authorized Admins (Comma Separated Emails)</label>
+          <input type="text" id="admin-list" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700" placeholder="e.g. j.miner@ddsb.ca, a.smith@ddsb.ca">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+        <button onclick="closeAdminModal()" class="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold text-sm rounded-xl transition">Close</button>
+        <button onclick="saveAdminChanges()" class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow-md">Save Settings</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Script Implementation -->
+  <script>
+    // Self-Healing Guard Mock for Google Apps Script 'google' Object Outside GAS Hosting Environments
+    if (typeof google === 'undefined') {
+      window.google = {
+        script: {
+          run: {
+            withSuccessHandler: function(onSuccess) {
+              return {
+                withFailureHandler: function(onFailure) {
+                  return {
+                    getInitialData: function() {
+                      console.warn("Using simulation mode: 'google' api is not active in this preview session.");
+                      setTimeout(() => {
+                        const todayStr = formatDateString(new Date());
+                        onSuccess({
+                          userEmail: "demo-educator@ddsb.ca",
+                          isAdmin: true,
+                          bookings: [
+                            { id: "BK_sim_1", user: "demo-educator@ddsb.ca", name: "Ms. Jamieson", date: todayStr, period: "1", purpose: "Grade 4 Research & Storytelling", seriesId: "" },
+                            { id: "BK_sim_2", user: "another-teacher@ddsb.ca", name: "Mr. Henderson", date: todayStr, period: "3", purpose: "Grade 8 STEAM Lab", seriesId: "SERIES_sim_999" }
+                          ],
+                          recurring: [],
+                          settings: {
+                            BannerActive: "true",
+                            BannerMessage: "Live Preview Sandbox: Data changes will run inside local memory. Deploy to Google Apps Script for real database persistence.",
+                            Admins: "demo-educator@ddsb.ca"
+                          },
+                          cycleDays: {
+                            [todayStr]: "Day 3"
+                          }
+                        });
+                      }, 400);
+                    },
+                    createBooking: function(bookingData) {
+                      console.log("Simulating dynamic booking save action:", bookingData);
+                      setTimeout(() => {
+                        const timestamp = new Date().getTime();
+                        if (bookingData.isRecurring) {
+                          state.bookings.push({
+                            id: "BK_" + timestamp,
+                            user: "demo-educator@ddsb.ca",
+                            name: bookingData.name,
+                            date: bookingData.startDate,
+                            period: bookingData.startPeriod,
+                            purpose: bookingData.purpose,
+                            seriesId: "SERIES_" + timestamp
+                          });
+                        } else {
+                          for(let p = parseInt(bookingData.startPeriod); p <= parseInt(bookingData.endPeriod); p++) {
+                            state.bookings.push({
+                              id: "BK_" + timestamp + "_" + p,
+                              user: "demo-educator@ddsb.ca",
+                              name: bookingData.name,
+                              date: bookingData.startDate,
+                              period: p.toString(),
+                              purpose: bookingData.purpose,
+                              seriesId: ""
+                            });
+                          }
+                        }
+                        onSuccess({
+                          userEmail: state.userEmail || "demo-educator@ddsb.ca",
+                          isAdmin: state.isAdmin,
+                          bookings: state.bookings,
+                          recurring: state.recurring,
+                          settings: state.settings,
+                          cycleDays: state.cycleDays || {}
+                        });
+                      }, 500);
+                    },
+                    deleteBooking: function(bId) {
+                      console.log("Simulating delete reservation:", bId);
+                      setTimeout(() => {
+                        state.bookings = state.bookings.filter(b => b.id !== bId);
+                        onSuccess({
+                          userEmail: state.userEmail || "demo-educator@ddsb.ca",
+                          isAdmin: state.isAdmin,
+                          bookings: state.bookings,
+                          recurring: state.recurring,
+                          settings: state.settings,
+                          cycleDays: state.cycleDays || {}
+                        });
+                      }, 400);
+                    },
+                    deleteRecurringSeries: function(sId) {
+                      console.log("Simulating delete series:", sId);
+                      setTimeout(() => {
+                        state.bookings = state.bookings.filter(b => b.seriesId !== sId);
+                        onSuccess({
+                          userEmail: state.userEmail || "demo-educator@ddsb.ca",
+                          isAdmin: state.isAdmin,
+                          bookings: state.bookings,
+                          recurring: state.recurring,
+                          settings: state.settings,
+                          cycleDays: state.cycleDays || {}
+                        });
+                      }, 400);
+                    },
+                    saveAdminSettings: function(newSettings) {
+                      console.log("Simulating update admin settings:", newSettings);
+                      setTimeout(() => {
+                        state.settings = newSettings;
+                        onSuccess({
+                          userEmail: state.userEmail || "demo-educator@ddsb.ca",
+                          isAdmin: state.isAdmin,
+                          bookings: state.bookings,
+                          recurring: state.recurring,
+                          settings: state.settings,
+                          cycleDays: state.cycleDays || {}
+                        });
+                      }, 400);
+                    }
+                  };
+                }
+              };
+            }
+          }
+        }
+      };
+    }
+
+    // State Engine
+    let state = {
+      userEmail: "",
+      isAdmin: false,
+      selectedDate: "",
+      bookings: [],
+      recurring: [],
+      settings: {},
+      cycleDays: {}, // Live Key-Value mapping returned from spreadsheet
+      tempBookingData: {},
+      recurringType: 'cycle', // 'cycle' or 'weekly'
+      daysConfig: {
+        cycle: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"],
+        weekly: ["Mon", "Tue", "Wed", "Thu", "Fri"]
+      }
+    };
+
+    // UI Render Cycles
+    window.onload = function() {
+      // Set default selected date (today)
+      const today = new Date();
+      state.selectedDate = formatDateString(today);
+      document.getElementById('date-input').value = state.selectedDate;
+      
+      // Load initial dataset from Google Sheets
+      loadInitialSystemData();
+    };
+
+    function loadInitialSystemData() {
+      google.script.run
+        .withSuccessHandler(onDataRetrieved)
+        .withFailureHandler(onSystemError)
+        .getInitialData();
+    }
+
+    function onDataRetrieved(data) {
+      state.userEmail = data.userEmail;
+      state.isAdmin = data.isAdmin;
+      state.bookings = data.bookings;
+      state.recurring = data.recurring;
+      state.settings = data.settings;
+      state.cycleDays = data.cycleDays || {};
+      
+      // Update Auth UI Elements
+      document.getElementById('user-email-badge').innerText = state.userEmail;
+      document.getElementById('user-avatar').innerText = state.userEmail.charAt(0).toUpperCase();
+      
+      if (state.isAdmin) {
+        document.getElementById('admin-toggle-btn').classList.remove('hidden');
+      }
+      
+      // Update Banner Message
+      const bannerArea = document.getElementById('alert-banner');
+      if (state.settings.BannerActive === 'true' || state.settings.BannerActive === true) {
+        document.getElementById('banner-text').innerText = state.settings.BannerMessage;
+        bannerArea.classList.remove('hidden');
+      } else {
+        bannerArea.classList.add('hidden');
+      }
+      
+      // Sync form fields inside admin
+      document.getElementById('admin-banner-active').checked = state.settings.BannerActive === 'true' || state.settings.BannerActive === true;
+      document.getElementById('admin-banner-message').value = state.settings.BannerMessage || '';
+      document.getElementById('admin-list').value = state.settings.Admins || '';
+
+      // Set standard end dates in form
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      document.getElementById('recurring-end-date').value = formatDateString(nextMonth);
+      
+      // Render components
+      renderSidebarDays();
+      renderScheduleGrid();
+    }
+
+    function onSystemError(err) {
+      alert("Error interacting with sheets: " + err.message);
+    }
+
+    /**
+     * Helper to get cycle day label dynamically with fallback
+     */
+    function getCycleDayLabel(dateStr, jsDateObj) {
+      if (state.cycleDays && state.cycleDays[dateStr]) {
+        return state.cycleDays[dateStr];
+      }
+      // Fallback fallback algorithm math if specific date is missing on sheet
+      const dayNum = jsDateObj.getDay();
+      if (dayNum >= 1 && dayNum <= 5) {
+        return "Day " + (((dayNum - 1) % 5) + 1);
+      }
+      return "No Cycle";
+    }
+
+    /**
+     * Renders Day Strip quick selection UI elements
+     */
+    function renderSidebarDays() {
+      const container = document.getElementById('days-strip');
+      container.innerHTML = "";
+      
+      const current = new Date(state.selectedDate + "T00:00:00");
+      const currentDayOfWeek = current.getDay();
+      
+      // Get Start of week (Monday)
+      const mondayOffset = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
+      const monday = new Date(current);
+      monday.setDate(current.getDate() + mondayOffset);
+      
+      const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+      
+      for(let i = 0; i < 5; i++) {
+        const iteratedDate = new Date(monday);
+        iteratedDate.setDate(monday.getDate() + i);
+        const iteratedStr = formatDateString(iteratedDate);
+        
+        const isSelected = iteratedStr === state.selectedDate;
+        
+        const btn = document.createElement('button');
+        btn.className = `w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
+          isSelected 
+            ? 'bg-teal-50 border-teal-300 text-teal-900 font-bold shadow-sm' 
+            : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-600 font-semibold'
+        }`;
+        
+        btn.onclick = () => handleDateChange(iteratedStr);
+        
+        // Calculate cycle indicator lookup
+        const cycleText = getCycleDayLabel(iteratedStr, iteratedDate);
+        
+        btn.innerHTML = `
+          <div class="flex flex-col">
+            <span class="text-xs uppercase tracking-wide opacity-80">${dayNames[i]}</span>
+            <span class="text-xs mt-0.5 opacity-60 font-medium">${iteratedDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full ${isSelected ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-500'} font-bold">${cycleText}</span>
+        `;
+        
+        container.appendChild(btn);
+      }
+    }
+
+    /**
+     * Renders daily interactive period slot list
+     */
+    function renderScheduleGrid() {
+      const grid = document.getElementById('booking-grid');
+      grid.innerHTML = "";
+      
+      // Set header strings
+      const dateObj = new Date(state.selectedDate + "T00:00:00");
+      document.getElementById('schedule-title-date').innerText = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      
+      const cycleStr = getCycleDayLabel(state.selectedDate, dateObj);
+      document.getElementById('schedule-subtitle-cycle').innerText = `School Cycle Focus: ${cycleStr}`;
+      document.getElementById('calendar-day-badge').innerText = cycleStr;
+      
+      // Active period configs
+      const periods = [
+        { num: 1, label: "Period 1", time: "09:00 AM - 10:00 AM" },
+        { num: 2, label: "Period 2", time: "10:00 AM - 11:00 AM" },
+        { num: 3, label: "Period 3", time: "11:15 AM - 12:15 PM" },
+        { num: 4, label: "Period 4", time: "01:00 PM - 02:00 PM" },
+        { num: 5, label: "Period 5", time: "02:00 PM - 03:00 PM" }
+      ];
+
+      periods.forEach(period => {
+        // Filter matchings bookings for current date and period
+        const matched = state.bookings.find(b => b.date === state.selectedDate && b.period.toString() === period.num.toString());
+        
+        const card = document.createElement('div');
+        
+        if (matched) {
+          // Locked / Booked Slot View
+          const isOwner = matched.user === state.userEmail;
+          const showDeleteOption = isOwner || state.isAdmin;
+          
+          card.className = `flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 rounded-2xl border transition-all ${
+            isOwner 
+              ? 'bg-teal-50 border-teal-200 text-teal-900' 
+              : 'bg-white border-slate-200 text-slate-800'
+          }`;
+          
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-black uppercase tracking-wider ${isOwner ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-700'} px-2 py-0.5 rounded">
+                  ${period.label}
+                </span>
+                <span class="text-xs text-slate-400 font-semibold">${period.time}</span>
+              </div>
+              <h4 class="font-bold text-base leading-tight mt-1">${matched.purpose}</h4>
+              <p class="text-xs font-medium text-slate-400 flex items-center">
+                <span class="material-icons text-xs mr-1">person</span> Reserved by: ${matched.name} (${matched.user})
+                ${matched.seriesId ? '<span class="material-icons text-xs text-emerald-500 ml-2 mr-0.5">repeat</span><span class="text-emerald-600">Series</span>' : ''}
+              </p>
+            </div>
+            ${showDeleteOption ? `
+              <button onclick="openDeleteConfirm('${matched.id}', '${matched.seriesId}')" class="mt-3 sm:mt-0 px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl flex items-center transition border border-rose-100">
+                <span class="material-icons text-xs mr-1">delete</span> Release Slot
+              </button>
+            ` : `
+              <span class="mt-3 sm:mt-0 text-[10px] bg-slate-100 text-slate-400 font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-200/50">Unavailable</span>
+            `}
+          `;
+        } else {
+          // Available Slot View
+          card.className = "flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 transition-all group";
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-black uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+                  ${period.label}
+                </span>
+                <span class="text-xs text-slate-400 font-semibold">${period.time}</span>
+              </div>
+              <h4 class="font-bold text-slate-400 italic text-base group-hover:text-slate-500 transition">Period open &amp; available for booking</h4>
+            </div>
+            <button onclick="openBookingConfig(${period.num})" class="mt-3 sm:mt-0 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center transition shadow-sm">
+              <span class="material-icons text-xs mr-1">add</span> Book Slot
+            </button>
+          `;
+        }
+        
+        grid.appendChild(card);
+      });
+    }
+
+    /**
+     * View navigation handlers
+     */
+    function handleDateChange(val) {
+      if(!val) return;
+      state.selectedDate = val;
+      document.getElementById('date-input').value = val;
+      renderSidebarDays();
+      renderScheduleGrid();
+    }
+
+    function stepWeek(weeks) {
+      const current = new Date(state.selectedDate + "T00:00:00");
+      current.setDate(current.getDate() + (weeks * 7));
+      handleDateChange(formatDateString(current));
+    }
+
+    function jumpToToday() {
+      handleDateChange(formatDateString(new Date()));
+    }
+
+    /**
+     * MODAL triggers: Create booking
+     */
+    function openBookingConfig(pNum) {
+      document.getElementById('booking-form').reset();
+      
+      // Default configurations
+      document.getElementById('start-period').value = pNum;
+      document.getElementById('end-period').value = pNum;
+      
+      toggleRecurringSection(false);
+      document.getElementById('is-recurring').checked = false;
+      
+      setRecurringType('cycle');
+      
+      document.getElementById('booking-modal').showModal();
+    }
+
+    function closeBookingModal() {
+      document.getElementById('booking-modal').close();
+    }
+
+    function toggleRecurringSection(show) {
+      const panel = document.getElementById('recurring-panel');
+      if (show) {
+        panel.classList.remove('hidden');
+      } else {
+        panel.classList.add('hidden');
+      }
+    }
+
+    function setRecurringType(type) {
+      state.recurringType = type;
+      
+      const cycleBtn = document.getElementById('type-cycle');
+      const weeklyBtn = document.getElementById('type-weekly');
+      
+      if (type === 'cycle') {
+        cycleBtn.className = "py-2 px-3 border-2 border-teal-500 bg-teal-50 text-teal-700 font-bold text-xs rounded-xl transition";
+        weeklyBtn.className = "py-2 px-3 border border-slate-200 hover:bg-white text-slate-600 font-bold text-xs rounded-xl transition";
+      } else {
+        weeklyBtn.className = "py-2 px-3 border-2 border-teal-500 bg-teal-50 text-teal-700 font-bold text-xs rounded-xl transition";
+        cycleBtn.className = "py-2 px-3 border border-slate-200 hover:bg-white text-slate-600 font-bold text-xs rounded-xl transition";
+      }
+      
+      renderChecklists();
+    }
+
+    function renderChecklists() {
+      const container = document.getElementById('days-checklist-container');
+      const label = document.getElementById('days-checklist-label');
+      container.innerHTML = "";
+      
+      const activeList = state.daysConfig[state.recurringType];
+      label.innerText = state.recurringType === 'cycle' ? 'Select Cycle Days' : 'Select Weekdays';
+      
+      activeList.forEach(day => {
+        const wrap = document.createElement('label');
+        wrap.className = "flex items-center space-x-1.5 bg-white border border-slate-200 hover:border-teal-400 py-1.5 px-3 rounded-lg text-xs font-bold text-slate-600 cursor-pointer select-none transition";
+        
+        wrap.innerHTML = `
+          <input type="checkbox" name="recur-day-select" value="${day}" checked class="text-teal-600 focus:ring-teal-500 rounded border-slate-300">
+          <span>${day}</span>
+        `;
+        container.appendChild(wrap);
+      });
+    }
+
+    function toggleEndRule(rule) {
+      const endRuleDate = document.getElementById('end-rule-date');
+      const endRuleOccurrences = document.getElementById('end-rule-occurrences');
+      
+      if(rule === 'date') {
+        endRuleDate.classList.remove('hidden');
+        endRuleOccurrences.classList.add('hidden');
+      } else {
+        endRuleOccurrences.classList.remove('hidden');
+        endRuleDate.classList.add('hidden');
+      }
+    }
+
+    function validatePeriodRange() {
+      const start = parseInt(document.getElementById('start-period').value);
+      const endSelect = document.getElementById('end-period');
+      
+      // Auto-set end selection equal to start selection if invalid
+      if (parseInt(endSelect.value) < start) {
+        endSelect.value = start;
+      }
+    }
+
+    /**
+     * Booking save execution
+     */
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      const isRecurring = document.getElementById('is-recurring').checked;
+      
+      // Collect selected checklist items
+      const checkedDays = [];
+      const boxes = document.getElementsByName('recur-day-select');
+      boxes.forEach(box => {
+        if(box.checked) checkedDays.push(box.value);
+      });
+      
+      if (isRecurring && checkedDays.length === 0) {
+        alert("Please choose at least one active day for the recurring series schedule.");
+        return;
+      }
+      
+      const bookingData = {
+        name: document.getElementById('booking-name').value,
+        startPeriod: document.getElementById('start-period').value,
+        endPeriod: document.getElementById('end-period').value,
+        purpose: document.getElementById('booking-purpose').value,
+        startDate: state.selectedDate,
+        isRecurring: isRecurring,
+        recurringType: state.recurringType,
+        selectedDays: checkedDays,
+        endType: document.querySelector('input[name="end-type"]:checked').value,
+        endDate: document.getElementById('recurring-end-date').value,
+        occurrences: document.getElementById('recurring-occurrences').value
+      };
+      
+      // Lock UI
+      document.getElementById('booking-grid').innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-3">
+          <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm font-semibold text-slate-600">Syncing with Google Sheets...</p>
+        </div>
+      `;
+      closeBookingModal();
+      
+      google.script.run
+        .withSuccessHandler(data => {
+          onDataRetrieved(data);
+        })
+        .withFailureHandler(err => {
+          alert("Booking Failure: " + err.message);
+          loadInitialSystemData();
+        })
+        .createBooking(bookingData);
+    }
+
+    /**
+     * MODAL triggers: Deletion Control
+     */
+    function openDeleteConfirm(bId, sId) {
+      state.tempBookingData = { bookingId: bId, seriesId: sId };
+      
+      const seriesArea = document.getElementById('delete-series-options');
+      const singleArea = document.getElementById('delete-single-options');
+      
+      if (sId) {
+        seriesArea.classList.remove('hidden');
+        singleArea.classList.add('hidden');
+      } else {
+        seriesArea.classList.add('hidden');
+        singleArea.classList.remove('hidden');
+      }
+      
+      document.getElementById('delete-modal').showModal();
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').close();
+    }
+
+    function handleDeleteAction(actionScope) {
+      closeDeleteModal();
+      
+      document.getElementById('booking-grid').innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20 text-slate-400 space-y-3">
+          <svg class="w-12 h-12 animate-spin text-teal-500" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm font-semibold text-slate-600">Releasing reservation slot...</p>
+        </div>
+      `;
+      
+      if (actionScope === 'series') {
+        google.script.run
+          .withSuccessHandler(onDataRetrieved)
+          .withFailureHandler(onSystemError)
+          .deleteRecurringSeries(state.tempBookingData.seriesId);
+      } else {
+        google.script.run
+          .withSuccessHandler(onDataRetrieved)
+          .withFailureHandler(onSystemError)
+          .deleteBooking(state.tempBookingData.bookingId);
+      }
+    }
+
+    /**
+     * MODAL triggers: Admin Panel Functions
+     */
+    function openAdminPanel() {
+      document.getElementById('admin-modal').showModal();
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').close();
+    }
+
+    function saveAdminChanges() {
+      const settings = {
+        BannerActive: document.getElementById('admin-banner-active').checked.toString(),
+        BannerMessage: document.getElementById('admin-banner-message').value,
+        Admins: document.getElementById('admin-list').value
+      };
+      
+      closeAdminModal();
+      
+      google.script.run
+        .withSuccessHandler(onDataRetrieved)
+        .withFailureHandler(onSystemError)
+        .saveAdminSettings(settings);
+    }
+
+    /**
+     * Date formatter helpers
+     */
+    function formatDateString(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  </script>
+</body>
+</html>
