@@ -17,7 +17,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="WPS Library">
   
-  <!-- Custom Styling for Interactive Depth -->
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -78,13 +77,13 @@
         </div>
         <div>
           <h1 class="text-lg font-bold text-slate-800 tracking-tight">WPS Library Commons</h1>
-          <p class="text-xs text-slate-400 font-bold">Interactive Booking Portal</p>
+          <p class="text-xs text-slate-400 font-bold">Interactive Weekly Booking Portal</p>
         </div>
       </div>
       
       <!-- User / Status Controls -->
       <div class="flex items-center space-x-4">
-        <!-- Admin settings access button (Hidden by default, displayed via JS) -->
+        <!-- Admin settings access button -->
         <button id="admin-btn" onclick="openAdminPanel()" class="hidden flex items-center space-x-1 px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-md shadow-amber-500/10 transition duration-150">
           <span class="material-icons text-sm">settings</span>
           <span>Admin Panel</span>
@@ -118,117 +117,76 @@
     </div>
   </div>
 
-  <!-- Primary Interactive Matrix Dashboard -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+  <!-- Main Grid Dashboard layout (Now with Weekly Navigation Header at top) -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
     
-    <!-- Left Navigation Sidebar -->
-    <div class="space-y-6">
-      
-      <!-- Calendar Widget Container -->
-      <section class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <h3 id="month-title" class="text-sm font-bold text-slate-800">May 2026</h3>
-          <div class="flex space-x-1">
-            <button onclick="changeMonth(-1)" class="p-1 hover:bg-slate-50 rounded-lg transition duration-150 text-slate-600">
-              <span class="material-icons text-lg flex items-center">chevron_left</span>
-            </button>
-            <button onclick="changeMonth(1)" class="p-1 hover:bg-slate-50 rounded-lg transition duration-150 text-slate-600">
-              <span class="material-icons text-lg flex items-center">chevron_right</span>
-            </button>
-          </div>
-        </div>
-        
-        <!-- Day Names Headers -->
-        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-          <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
-        </div>
-        
-        <!-- Day Dates Container -->
-        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-xs">
-          <!-- Populated dynamically inside renderCalendar() -->
-        </div>
-      </section>
-
-      <!-- Calendar Interactive Key / Legend -->
-      <section class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Calendar Indicators</h3>
-        <div class="space-y-3 text-xs text-slate-600 font-semibold">
-          <div class="flex items-center space-x-2.5">
-            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full shadow-sm shadow-blue-500/10"></span>
-            <span>Currently Selected</span>
-          </div>
-          <div class="flex items-center space-x-2.5">
-            <span class="w-2.5 h-2.5 bg-slate-100 border border-slate-200 rounded-full"></span>
-            <span>Unscheduled / Break</span>
-          </div>
-          <div class="flex items-center space-x-2.5">
-            <span class="w-2.5 h-2.5 bg-amber-50 border border-amber-200 rounded-full"></span>
-            <span>Reserved Time slots</span>
-          </div>
-          <div class="flex items-center space-x-2.5 text-slate-400">
-            <span>A - F</span>
-            <span>Designated Cycle Days</span>
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Right Side Dashboard Portal -->
-    <div class="lg:col-span-3 space-y-6">
-      
-      <!-- Current selection dashboard header -->
-      <div class="bg-white border border-slate-100 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-sm">
-        <div>
-          <h2 id="selected-date-title" class="text-lg font-bold text-slate-800">Monday, May 18, 2026</h2>
-          <span id="cycle-day-badge" class="inline-block mt-1 text-xs font-bold text-slate-500">Cycle Day A</span>
-        </div>
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border border-slate-100 rounded-lg px-3 py-1.5 self-start sm:self-center">
-          Schedule Matrix View
-        </span>
+    <!-- Week Navigation Header Bar -->
+    <div class="bg-white border border-slate-100 rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-sm">
+      <div class="flex items-center space-x-4">
+        <button onclick="navigateWeek(-7)" class="flex items-center justify-center p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition duration-150">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        <button onclick="navigateWeek(0)" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition duration-150">
+          This Week
+        </button>
+        <button onclick="navigateWeek(7)" class="flex items-center justify-center p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition duration-150">
+          <span class="material-icons">chevron_right</span>
+        </button>
       </div>
-
-      <!-- Booking Matrix time layout -->
-      <section class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
-        <div class="px-6 py-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
-          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Available Periods</h3>
-          <span class="text-xs text-slate-400 font-bold">Periods 1 - 5</span>
-        </div>
-        
-        <div id="matrix-container" class="divide-y divide-slate-100">
-          <!-- Filled dynamically via renderMatrix() -->
-        </div>
-      </section>
-
-      <!-- Active Reservations Summary -->
-      <section class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-        <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center">
-          <span class="material-icons text-xl text-blue-500 mr-2">event_note</span> Your Upcoming Bookings
-        </h3>
-        
-        <div class="custom-scroll overflow-x-auto">
-          <table class="min-w-full text-sm text-left">
-            <thead>
-              <tr class="border-b border-slate-100 text-slate-400 font-bold text-xs uppercase tracking-wider">
-                <th class="pb-3 font-bold">Date</th>
-                <th class="pb-3 font-bold">Period</th>
-                <th class="pb-3 font-bold">Teacher Name</th>
-                <th class="pb-3 font-bold">Purpose / Description</th>
-                <th class="pb-3 text-right font-bold">Action</th>
-              </tr>
-            </thead>
-            <tbody id="upcoming-bookings-tbody" class="divide-y divide-slate-50 text-slate-700 font-semibold">
-              <!-- Dynamically populated reservations rows -->
-            </tbody>
-          </table>
-          
-          <div id="no-upcoming" class="hidden text-center py-8 text-slate-400 font-semibold text-xs uppercase tracking-wider">
-            You do not have any upcoming bookings reserved.
-          </div>
-        </div>
-      </section>
-
+      <div class="text-left md:text-right">
+        <h2 id="weekly-range-title" class="text-lg font-bold text-slate-800">Week of May 18 – May 22, 2026</h2>
+        <p class="text-xs text-slate-400 font-bold mt-0.5 uppercase tracking-wider">Weekly Schedule Grid</p>
+      </div>
     </div>
+
+    <!-- Interactive Weekly Matrix Grid Container -->
+    <section class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+      <div class="overflow-x-auto custom-scroll">
+        <table class="min-w-full divide-y divide-slate-100 table-fixed">
+          <thead class="bg-slate-50/70">
+            <tr id="weekly-header-row">
+              <th class="w-48 px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Time Slot</th>
+              <th class="px-4 py-4 text-center text-xs font-bold text-slate-700">Monday <span class="block text-[10px] text-slate-400">May 18</span></th>
+              <th class="px-4 py-4 text-center text-xs font-bold text-slate-700">Tuesday <span class="block text-[10px] text-slate-400">May 19</span></th>
+              <th class="px-4 py-4 text-center text-xs font-bold text-slate-700">Wednesday <span class="block text-[10px] text-slate-400">May 20</span></th>
+              <th class="px-4 py-4 text-center text-xs font-bold text-slate-700">Thursday <span class="block text-[10px] text-slate-400">May 21</span></th>
+              <th class="px-4 py-4 text-center text-xs font-bold text-slate-700">Friday <span class="block text-[10px] text-slate-400">May 22</span></th>
+            </tr>
+          </thead>
+          <tbody id="weekly-matrix-tbody" class="divide-y divide-slate-100 bg-white">
+            <!-- Programmatically injected weekly calendar rows inside renderMatrix() -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Bottom summary list of active reservations -->
+    <section class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+      <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center">
+        <span class="material-icons text-xl text-blue-500 mr-2">event_note</span> Your Upcoming Bookings
+      </h3>
+      
+      <div class="custom-scroll overflow-x-auto">
+        <table class="min-w-full text-sm text-left">
+          <thead>
+            <tr class="border-b border-slate-100 text-slate-400 font-bold text-xs uppercase tracking-wider">
+              <th class="pb-3 font-bold">Date</th>
+              <th class="pb-3 font-bold">Period</th>
+              <th class="pb-3 font-bold">Teacher Name</th>
+              <th class="pb-3 font-bold">Purpose / Description</th>
+              <th class="pb-3 text-right font-bold">Action</th>
+            </tr>
+          </thead>
+          <tbody id="upcoming-bookings-tbody" class="divide-y divide-slate-50 text-slate-700 font-semibold">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+        
+        <div id="no-upcoming" class="hidden text-center py-8 text-slate-400 font-semibold text-xs uppercase tracking-wider">
+          You do not have any upcoming bookings reserved.
+        </div>
+      </div>
+    </section>
 
   </main>
 
@@ -642,11 +600,30 @@
       recurring: [],
       settings: {},
       cycleDays: {},
-      currentDate: new Date(),
+      currentDate: new Date(), // Tracking current date reference
       selectedDate: null,
       selectedPeriod: null,
       tempBookingData: null
     };
+
+    // The 15 discrete time blocks to map out in the daily rows
+    const timeSlots = [
+      "Before School",
+      "Period 1",
+      "Period 2",
+      "AM Recess",
+      "Period 3",
+      "Period 4",
+      "Lunch",
+      "Period 5",
+      "Period 6",
+      "PM Recess",
+      "Period 7",
+      "Period 8",
+      "Period 9",
+      "Period 10",
+      "After School"
+    ];
 
     /**
      * Lifecycle Starter
@@ -736,7 +713,7 @@
       document.getElementById('admin-banner-message').value = state.settings.BannerMessage || '';
       document.getElementById('admin-list').value = state.settings.Admins || '';
       
-      renderCalendar();
+      renderWeeklyGrid();
       renderUpcomingBookings();
       renderBanner();
     }
@@ -765,179 +742,136 @@
     }
 
     /**
-     * UI Render: Navigation Calendar
+     * Returns an array of the 5 weekday Date objects (Monday to Friday) for the week of the given date
      */
-    function renderCalendar() {
-      const titleEl = document.getElementById('month-title');
-      const container = document.getElementById('calendar-grid');
-      container.innerHTML = '';
-      
-      const year = state.currentDate.getFullYear();
-      const month = state.currentDate.getMonth();
-      
-      const monthNames = [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-      ];
-      titleEl.textContent = `${monthNames[month]} ${year}`;
-      
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const lastDay = new Date(year, month + 1, 0).getDate();
-      
-      // Empty Padding slots
-      for (let i = 0; i < firstDayIndex; i++) {
-        const div = document.createElement('div');
-        div.className = 'py-2';
-        container.appendChild(div);
+    function getWeekDays(date) {
+      const current = new Date(date);
+      const day = current.getDay();
+      const diff = current.getDate() - day + (day === 0 ? -6 : 1); // Adjust to get Monday as start
+      const monday = new Date(current.setDate(diff));
+      const week = [];
+      for (let i = 0; i < 5; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        week.push(d);
       }
-      
-      // Map existing booked dates for highlights
-      const bookedDatesSet = new Set(state.bookings.map(b => b.date));
-      
-      // Grid construction
-      for (let day = 1; day <= lastDay; day++) {
-        const d = new Date(year, month, day);
-        const dStr = formatDateString(d);
-        const cycleDay = state.cycleDays[dStr];
-        
-        const isSelected = dStr === state.selectedDate;
-        const hasBookings = bookedDatesSet.has(dStr);
-        
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.onclick = () => selectDate(dStr);
-        
-        let baseClass = "py-2.5 w-full rounded-xl flex flex-col items-center justify-center transition duration-150 text-xs font-semibold ";
-        
-        if (isSelected) {
-          baseClass += "bg-blue-500 text-white shadow-md shadow-blue-500/10";
-        } else if (hasBookings) {
-          baseClass += "bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100";
-        } else {
-          baseClass += "hover:bg-slate-100 text-slate-700";
-        }
-        
-        btn.className = baseClass;
-        
-        const numSpan = document.createElement('span');
-        numSpan.textContent = day;
-        numSpan.className = "text-xs font-bold";
-        btn.appendChild(numSpan);
-        
-        if (cycleDay) {
-          const subSpan = document.createElement('span');
-          subSpan.textContent = cycleDay;
-          subSpan.className = isSelected ? "text-[8px] text-blue-100 font-bold mt-0.5" : "text-[8px] text-slate-400 font-bold mt-0.5";
-          btn.appendChild(subSpan);
-        }
-        
-        container.appendChild(btn);
-      }
-      
-      // Update Heading Labels
-      const selectedObj = new Date(state.selectedDate + 'T00:00:00');
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('selected-date-title').textContent = selectedObj.toLocaleDateString('en-US', options);
-      
-      const cycle = state.cycleDays[state.selectedDate];
-      const cycleLabel = document.getElementById('cycle-day-badge');
-      if (cycle) {
-        cycleLabel.textContent = `School Day Designation: Cycle Day ${cycle}`;
-        cycleLabel.className = "inline-block mt-1 text-xs font-bold text-blue-600";
-      } else {
-        cycleLabel.textContent = "Unscheduled School Day / Weekend";
-        cycleLabel.className = "inline-block mt-1 text-xs font-bold text-slate-400";
-      }
-      
-      renderMatrix();
-    }
-
-    function changeMonth(dir) {
-      state.currentDate.setMonth(state.currentDate.getMonth() + dir);
-      renderCalendar();
-    }
-
-    function selectDate(dStr) {
-      state.selectedDate = dStr;
-      renderCalendar();
+      return week;
     }
 
     /**
-     * UI Render: Matrix Time slots
+     * Navigate active schedule grid backwards or forwards by days
      */
-    function renderMatrix() {
-      const container = document.getElementById('matrix-container');
-      container.innerHTML = '';
+    function navigateWeek(offsetDays) {
+      if (offsetDays === 0) {
+        state.currentDate = new Date();
+      } else {
+        state.currentDate.setDate(state.currentDate.getDate() + offsetDays);
+      }
+      renderWeeklyGrid();
+    }
+
+    /**
+     * UI Render: Full Weekly Grid View (Exact Original Design Layout with slots mapping)
+     */
+    function renderWeeklyGrid() {
+      const weekDays = getWeekDays(state.currentDate);
       
-      const periods = ["Period 1", "Period 2", "Period 3", "Period 4", "Period 5"];
+      // Update Navigation Range Header Text
+      const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      const startStr = weekDays[0].toLocaleDateString('en-US', options);
+      const endStr = weekDays[4].toLocaleDateString('en-US', options);
+      document.getElementById('weekly-range-title').textContent = `Week of ${startStr} – ${endStr}`;
       
-      periods.forEach(period => {
-        const match = state.bookings.find(b => b.date === state.selectedDate && b.period === period);
+      // 1. Render Table Column Headers
+      const headerRow = document.getElementById('weekly-header-row');
+      headerRow.innerHTML = '<th class="w-48 px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Time Slot</th>';
+      
+      const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+      weekDays.forEach((dateObj, i) => {
+        const dateStr = formatDateString(dateObj);
+        const cycle = state.cycleDays[dateStr];
+        const formattedDayLabel = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         
-        const row = document.createElement('div');
-        row.className = "flex flex-col sm:flex-row sm:items-center justify-between p-5 gap-4 transition duration-150 hover:bg-slate-50/60";
+        const th = document.createElement('th');
+        th.className = "px-4 py-3.5 text-center text-xs font-bold text-slate-700 bg-slate-50/50";
+        th.innerHTML = `
+          <div class="flex flex-col items-center">
+            <span class="text-slate-800 font-bold text-sm">${dayNames[i]}</span>
+            <span class="text-[10px] text-slate-400 font-bold mt-0.5">${formattedDayLabel}</span>
+            ${cycle ? `<span class="mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] font-extrabold tracking-wide uppercase border border-blue-100">Cycle ${cycle}</span>` : '<span class="mt-1 text-[9px] text-slate-300 font-semibold uppercase tracking-wider">Off-Cycle</span>'}
+          </div>
+        `;
+        headerRow.appendChild(th);
+      });
+
+      // 2. Render 15 Matrix Rows (Before School, Periods, Recesses, Lunch, After School)
+      const tbody = document.getElementById('weekly-matrix-tbody');
+      tbody.innerHTML = '';
+      
+      timeSlots.forEach(slot => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/30 transition duration-150";
         
-        const infoCol = document.createElement('div');
-        infoCol.className = "flex items-center space-x-4";
+        // Time Slot Name Column
+        const labelTd = document.createElement('td');
+        labelTd.className = "px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-800 bg-slate-50/40 border-r border-slate-100";
+        labelTd.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="material-icons text-slate-400 text-lg">${slot.includes('Period') ? 'calendar_view_day' : 'schedule'}</span>
+            <span>${slot}</span>
+          </div>
+        `;
+        tr.appendChild(labelTd);
         
-        const iconContainer = document.createElement('div');
-        
-        const textCol = document.createElement('div');
-        const pHeading = document.createElement('h4');
-        pHeading.className = "text-sm font-bold text-slate-800";
-        pHeading.textContent = period;
-        textCol.appendChild(pHeading);
-        
-        const detailSub = document.createElement('p');
-        
-        if (match) {
-          iconContainer.className = "w-10 h-10 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-center text-rose-500 shadow-sm";
-          iconContainer.innerHTML = '<span class="material-icons text-lg flex items-center">block</span>';
+        // Populate Cell columns Monday - Friday
+        weekDays.forEach(dateObj => {
+          const dateStr = formatDateString(dateObj);
+          const cellTd = document.createElement('td');
+          cellTd.className = "p-3 text-center border-r border-slate-100 min-w-[150px] align-middle";
           
-          detailSub.className = "text-xs text-rose-600 font-bold mt-0.5 flex items-center";
-          detailSub.innerHTML = `<span class="material-icons text-sm mr-1">person</span> Reserved by ${match.name} (${match.purpose})`;
-          textCol.appendChild(detailSub);
+          const match = state.bookings.find(b => b.date === dateStr && b.period === slot);
           
-          row.appendChild(infoCol);
-          infoCol.appendChild(iconContainer);
-          infoCol.appendChild(textCol);
-          
-          // Show cancel option if booker is current user OR is an admin
-          if (match.user.toLowerCase() === state.userEmail.toLowerCase() || state.isAdmin) {
-            const cancelBtn = document.createElement('button');
-            cancelBtn.type = 'button';
-            cancelBtn.onclick = () => openDeleteModal(match);
-            cancelBtn.className = "px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold transition duration-150 shadow-sm self-start sm:self-center";
-            cancelBtn.textContent = "Cancel Booking";
-            row.appendChild(cancelBtn);
+          if (match) {
+            // Check authorization to show Delete button
+            const isUserBooking = match.user.toLowerCase() === state.userEmail.toLowerCase();
+            const canCancel = isUserBooking || state.isAdmin;
+            
+            const badge = document.createElement('div');
+            badge.className = isUserBooking 
+              ? "relative p-3 bg-blue-50 text-blue-800 rounded-xl text-left border border-blue-200 shadow-sm shadow-blue-500/5 group transition" 
+              : "relative p-3 bg-amber-50/70 text-amber-900 rounded-xl text-left border border-amber-200/50 shadow-sm group transition";
+            
+            badge.innerHTML = `
+              <p class="text-xs font-extrabold truncate pr-5" title="${match.name}">${match.name}</p>
+              <p class="text-[10px] font-bold text-slate-500 mt-1 truncate" title="${match.purpose}">${match.purpose}</p>
+            `;
+            
+            if (canCancel) {
+              const delBtn = document.createElement('button');
+              delBtn.className = "absolute top-2 right-2 text-rose-500 hover:text-rose-700 opacity-0 group-hover:opacity-100 focus:opacity-100 transition duration-150 p-0.5 hover:bg-rose-50 rounded-lg";
+              delBtn.onclick = (e) => {
+                e.stopPropagation();
+                openDeleteModal(match);
+              };
+              delBtn.innerHTML = '<span class="material-icons text-sm block">delete</span>';
+              badge.appendChild(delBtn);
+            }
+            
+            cellTd.appendChild(badge);
           } else {
-            const label = document.createElement('span');
-            label.className = "text-[10px] bg-slate-100 text-slate-400 border border-slate-200 rounded-lg px-2.5 py-1.5 font-bold uppercase tracking-wider self-start sm:self-center";
-            label.textContent = "Unavailable";
-            row.appendChild(label);
+            // Free cell: display reservation button
+            const bookBtn = document.createElement('button');
+            bookBtn.type = "button";
+            bookBtn.onclick = () => openBookingModal(dateStr, slot);
+            bookBtn.className = "w-full py-2.5 bg-slate-100 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-xl text-xs font-bold transition duration-150 border border-dashed border-slate-200 hover:border-blue-200 hover:shadow-sm";
+            bookBtn.innerHTML = '<span class="material-icons text-sm inline-block align-middle mr-0.5">add</span>Reserve';
+            cellTd.appendChild(bookBtn);
           }
           
-        } else {
-          iconContainer.className = "w-10 h-10 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-center text-emerald-500 shadow-sm";
-          iconContainer.innerHTML = '<span class="material-icons text-lg flex items-center">check_circle_outline</span>';
-          
-          detailSub.className = "text-xs text-emerald-600 font-semibold mt-0.5";
-          detailSub.textContent = "Available for booking";
-          textCol.appendChild(detailSub);
-          
-          row.appendChild(infoCol);
-          infoCol.appendChild(iconContainer);
-          infoCol.appendChild(textCol);
-          
-          const bookBtn = document.createElement('button');
-          bookBtn.type = 'button';
-          bookBtn.onclick = () => openBookingModal(period);
-          bookBtn.className = "px-4.5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition duration-150 shadow-md shadow-blue-500/10 self-start sm:self-center";
-          bookBtn.textContent = "Reserve Period";
-          row.appendChild(bookBtn);
-        }
+          tr.appendChild(cellTd);
+        });
         
-        container.appendChild(row);
+        tbody.appendChild(tr);
       });
     }
 
@@ -989,9 +923,10 @@
     /**
      * MODAL triggers: Create booking functions
      */
-    function openBookingModal(period) {
+    function openBookingModal(dateStr, period) {
+      state.selectedDate = dateStr;
       state.selectedPeriod = period;
-      document.getElementById('modal-date-label').textContent = state.selectedDate;
+      document.getElementById('modal-date-label').textContent = dateStr;
       document.getElementById('modal-period-label').textContent = period;
       
       document.getElementById('booking-form').reset();
@@ -1018,7 +953,7 @@
         toggleRecurrenceFields();
         toggleEndTypeFields();
         
-        // Setup a sensible default date
+        // Setup a sensible default date (1 month in future)
         const nextMonth = new Date(state.selectedDate + 'T00:00:00');
         nextMonth.setMonth(nextMonth.getMonth() + 1);
         document.getElementById('recurring-end-date').value = formatDateString(nextMonth);
