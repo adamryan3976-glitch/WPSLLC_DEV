@@ -688,29 +688,27 @@
             const isOwner = matched.user === state.userEmail;
             const showDeleteOption = isOwner || state.isAdmin;
 
+            // Soft Red style box for Booked slots with detailed metadata
             dayTd.innerHTML = `
-              <div class="relative group p-2.5 rounded-xl border text-xs leading-normal transition-all ${
-                isOwner 
-                  ? 'bg-teal-50/90 border-teal-200 text-teal-900 shadow-sm' 
-                  : 'bg-white border-slate-200 text-slate-800'
-              }">
+              <div class="relative group p-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-950 text-xs leading-normal transition-all shadow-sm">
                 <div class="font-bold truncate" title="${matched.purpose}">${matched.purpose}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5 font-medium flex items-center justify-between">
+                <div class="text-[10px] text-rose-700 mt-0.5 font-medium flex items-center justify-between">
                   <span class="truncate pr-1">${matched.name}</span>
-                  ${matched.seriesId ? '<span class="material-icons text-[10px] text-emerald-500" title="Recurring Series">repeat</span>' : ''}
+                  ${matched.seriesId ? '<span class="material-icons text-[10px] text-rose-500" title="Recurring Series">repeat</span>' : ''}
                 </div>
                 ${showDeleteOption ? `
-                  <button onclick="openDeleteConfirm('${matched.id}', '${matched.seriesId}')" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-rose-100 hover:bg-rose-200 text-rose-700 h-5 w-5 flex items-center justify-center rounded-full transition shadow-sm">
+                  <button onclick="openDeleteConfirm('${matched.id}', '${matched.seriesId}')" class="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 bg-rose-200 hover:bg-rose-300 text-rose-900 h-5 w-5 flex items-center justify-center rounded-full transition shadow-sm">
                     <span class="material-icons text-xs">close</span>
                   </button>
                 ` : ''}
               </div>
             `;
           } else {
-            // Empty Cell Available Action Trigger
+            // Elegant Soft Green style button for Available slots
             dayTd.innerHTML = `
-              <button onclick="openBookingConfig('${day.dateStr}', ${p.num})" class="w-full py-2.5 border border-dashed border-slate-200 hover:border-teal-400 hover:bg-white text-slate-300 hover:text-teal-600 rounded-xl flex items-center justify-center transition-all group">
-                <span class="material-icons text-xs group-hover:scale-110 transition">add</span>
+              <button onclick="openBookingConfig('${day.dateStr}', ${p.num})" class="w-full py-2 px-3 border border-emerald-200 bg-emerald-50 hover:bg-emerald-100/80 text-emerald-800 rounded-xl flex items-center justify-center gap-1.5 transition-all group font-bold text-xs shadow-sm">
+                <span class="material-icons text-sm text-emerald-600 group-hover:scale-110 transition">add_circle</span>
+                <span>Available</span>
               </button>
             `;
           }
